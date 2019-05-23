@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_template_project/src/helpers/firestore_helper.dart';
+import 'package:app_template_project/src/helpers/internet_connectivity_check.dart';
 import 'package:app_template_project/src/helpers/text_helper.dart';
 import 'package:app_template_project/src/models/item.dart';
 import 'package:flutter/material.dart';
@@ -173,8 +174,17 @@ class _EditItemPageState extends State<EditItemPage> {
                     padding: const EdgeInsets.only(left: 2.0, right: 2.0),
                     child: FlatButton(
                       onPressed: () async {
-                        // delete the item
-                        await FirestoreHelper().deleteItemFromDatabase(editableItem.documentId, context);
+                        await InternetConnectivityCheck.getConnectionStatus()
+                            .then((status) async {
+                          if (status) {
+                            // delete the item
+                            await FirestoreHelper().deleteItemFromDatabase(
+                                editableItem.documentId, context);
+                          } else {
+                            // no internet connection page
+                            Navigator.of(context).pushNamed('/NoInternetPage');
+                          }
+                        });
                       },
                       child: Text(
                         "Delete this item",
@@ -419,10 +429,18 @@ class _EditItemPageState extends State<EditItemPage> {
     } else if (editableItem.photoUrls.length <= 0 && _newImages.length <= 0) {
       _showErrorSnackBar("Image of item is not added!");
     } else {
-      //upload image and finally upload item to firestore then pop the page!
-      _showUploadingDialog();
-      await FirestoreHelper().editItemInDatabase(
-          editableItem, _newImages, deletedImagesUrls, context);
+      await InternetConnectivityCheck.getConnectionStatus()
+          .then((status) async {
+        if (status) {
+          //upload image and finally upload item to firestore then pop the page!
+          _showUploadingDialog();
+          await FirestoreHelper().editItemInDatabase(
+              editableItem, _newImages, deletedImagesUrls, context);
+        } else {
+          // no internet connection page
+          Navigator.of(context).pushNamed('/NoInternetPage');
+        }
+      });
     }
   }
 

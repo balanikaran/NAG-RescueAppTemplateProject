@@ -1,10 +1,13 @@
 import 'package:app_template_project/src/fragments/feeds_fragment.dart';
 import 'package:app_template_project/src/fragments/maps_fragment.dart';
 import 'package:app_template_project/src/fragments/profile_fragment.dart';
+import 'package:app_template_project/src/helpers/internet_connectivity_check.dart';
 import 'package:app_template_project/src/screens/add_new_item_page.dart';
 import 'package:app_template_project/src/screens/user_uploads_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'no_internet_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,7 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String _pageTitle = "Home";
-  int _index = 1, count;
+  int _index = 1, count, currentInflatedPage = 1;
   PageController _pageController;
 
   final PageStorageBucket pageStorageBucket = PageStorageBucket();
@@ -48,7 +51,8 @@ class _HomePageState extends State<HomePage> {
     return MaterialApp(
       routes: <String, WidgetBuilder>{
         '/AddNewItemPage': (BuildContext context) => AddNewItemPage(),
-        '/UserUploadsPage': (BuildContext context) => UserUploadsPage()
+        '/UserUploadsPage': (BuildContext context) => UserUploadsPage(),
+        '/NoInternetPage': (BuildContext context) => NoInternetPage(),
       },
       debugShowCheckedModeBanner: false,
       title: "App home screen",
@@ -109,22 +113,36 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _tabSelected(int index) {
-    print(index);
     setState(() {
-      if (index == 0) {
-        setState(() {
-          _pageTitle = "User Profile";
-          _index = 0;
-        });
-      } else if (index == 1) {
-        setState(() {
-          _pageTitle = "Home";
-          _index = 1;
-        });
-      } else if (index == 2) {
-        _pageTitle = "Maps";
-        _index = 2;
-      }
+      InternetConnectivityCheck.getConnectionStatus().then((status) {
+        if (currentInflatedPage != index) {
+          if (status) {
+            // change the pages
+            print(index);
+            if (index == 0) {
+              setState(() {
+                _pageTitle = "User Profile";
+                _index = 0;
+                currentInflatedPage = 0;
+              });
+            } else if (index == 1) {
+              setState(() {
+                _pageTitle = "Home";
+                _index = 1;
+                currentInflatedPage = 1;
+              });
+            } else if (index == 2) {
+              _pageTitle = "Maps";
+              _index = 2;
+              currentInflatedPage = 2;
+            }
+          } else {
+            // show no internet connection page
+            print("no internet connection");
+            Navigator.of(context).pushNamed('/NoInternetPage');
+          }
+        }
+      });
     });
   }
 }

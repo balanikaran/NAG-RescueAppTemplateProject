@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:app_template_project/src/custom_widgets/fancy_button.dart';
 import 'package:app_template_project/src/helpers/firestore_helper.dart';
+import 'package:app_template_project/src/helpers/internet_connectivity_check.dart';
 import 'package:app_template_project/src/helpers/text_helper.dart';
 import 'package:app_template_project/src/screens/intermediate_login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -100,16 +101,27 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                         ),
                         child: IconButton(
                           onPressed: () async {
-                            await ImagePicker.pickImage(
-                                    source: ImageSource.gallery,
-                                    maxHeight: 512.0,
-                                    maxWidth: 512.0)
-                                .then((image) async {
-                              if (image != null) {
-                                await _showUserImageUploadDialog(context, image)
-                                    .then((onValue) {
-                                  _refresh();
+                            await InternetConnectivityCheck
+                                    .getConnectionStatus()
+                                .then((status) async {
+                              if (status) {
+                                await ImagePicker.pickImage(
+                                        source: ImageSource.gallery,
+                                        maxHeight: 512.0,
+                                        maxWidth: 512.0)
+                                    .then((image) async {
+                                  if (image != null) {
+                                    await _showUserImageUploadDialog(
+                                            context, image)
+                                        .then((onValue) {
+                                      _refresh();
+                                    });
+                                  }
                                 });
+                              } else {
+                                // no internet connection page
+                                Navigator.of(context)
+                                    .pushNamed('/NoInternetPage');
                               }
                             });
                           },
@@ -181,10 +193,20 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                         child: IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () async {
-                            await _showNameEditDialog(
-                                    context, textFieldNameController)
-                                .then((onValue) {
-                              _refresh();
+                            await InternetConnectivityCheck
+                                    .getConnectionStatus()
+                                .then((status) async {
+                              if (status) {
+                                await _showNameEditDialog(
+                                        context, textFieldNameController)
+                                    .then((onValue) {
+                                  _refresh();
+                                });
+                              } else {
+                                // no internet connection page
+                                Navigator.of(context)
+                                    .pushNamed('/NoInternetPage');
+                              }
                             });
                           },
                         ),
@@ -293,7 +315,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                               String name;
                               if (snapshot.hasData) {
                                 name =
-                                    "[${snapshot.data.latitude} °N, ${snapshot.data.longitude} °E]";
+                                    "[${snapshot.data.latitude.toString().substring(0, 6)} °N, ${snapshot.data.longitude.toString().substring(0, 6)} °E]";
                               } else {
                                 name = "Your co-ordinates here...";
                               }
@@ -319,8 +341,16 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 2.0, right: 2.0),
                     child: FlatButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/UserUploadsPage');
+                      onPressed: () async {
+                        await InternetConnectivityCheck.getConnectionStatus()
+                            .then((status) {
+                          if (status) {
+                            Navigator.of(context).pushNamed('/UserUploadsPage');
+                          } else {
+                            // no internet connection page
+                            Navigator.of(context).pushNamed('/NoInternetPage');
+                          }
+                        });
                       },
                       child: Text(
                         "My items",

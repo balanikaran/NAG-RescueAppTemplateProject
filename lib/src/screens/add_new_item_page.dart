@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_template_project/src/helpers/firestore_helper.dart';
+import 'package:app_template_project/src/helpers/internet_connectivity_check.dart';
 import 'package:app_template_project/src/helpers/text_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -324,10 +325,18 @@ class _AddNewItemPageState extends State<AddNewItemPage> {
     } else if (_itemImages.length <= 0) {
       _showErrorSnackBar("Image of item is not added!");
     } else {
-      //upload image and finally upload item to firestore then pop the page!
-      _showUploadingDialog();
-      await FirestoreHelper().uploadNewItemToDatabase(_itemName, _itemQuantity,
-          _itemDescription, _itemTags, _itemImages, context);
+      await InternetConnectivityCheck.getConnectionStatus().then((status) async {
+        if (status){
+          //upload image and finally upload item to FireStore then pop the page!
+          _showUploadingDialog();
+          await FirestoreHelper().uploadNewItemToDatabase(_itemName, _itemQuantity,
+              _itemDescription, _itemTags, _itemImages, context);
+        }else{
+          // no internet connection page
+          Navigator.of(context).pushNamed('/NoInternetPage');
+        }
+      });
+
     }
   }
 
@@ -362,7 +371,7 @@ class _AddNewItemPageState extends State<AddNewItemPage> {
   }
 
   Future<bool> _onBackPressed() {
-    Future.delayed(Duration(milliseconds: 2), () {
+    return Future.delayed(Duration(milliseconds: 2), () {
       return false;
     });
   }

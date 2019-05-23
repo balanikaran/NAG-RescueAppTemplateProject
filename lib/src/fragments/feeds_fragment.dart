@@ -1,4 +1,5 @@
 import 'package:app_template_project/src/helpers/firestore_helper.dart';
+import 'package:app_template_project/src/helpers/internet_connectivity_check.dart';
 import 'package:app_template_project/src/models/item.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 import 'package:flutter/material.dart';
@@ -66,13 +67,20 @@ class _FeedsFragmentState extends State<FeedsFragment>
   }
 
   void _navigateToAddNewItemPage() async {
-    final shouldRefresh =
-        await Navigator.of(context).pushNamed('/AddNewItemPage') ?? false;
-    if (shouldRefresh) {
-      setState(() {
-        _refresh();
-      });
-    }
+    await InternetConnectivityCheck.getConnectionStatus().then((status) async {
+      if (status) {
+        final shouldRefresh =
+            await Navigator.of(context).pushNamed('/AddNewItemPage') ?? false;
+        if (shouldRefresh) {
+          setState(() {
+            _refresh();
+          });
+        }
+      } else {
+        // no internet connection page
+        Navigator.of(context).pushNamed('/NoInternetPage');
+      }
+    });
   }
 
   void _scrollListener() {

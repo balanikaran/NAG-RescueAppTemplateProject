@@ -2,6 +2,7 @@ import 'package:app_template_project/src/screens/add_new_item_page.dart';
 import 'package:app_template_project/src/screens/error_page.dart';
 import 'package:app_template_project/src/screens/home_page.dart';
 import 'package:app_template_project/src/screens/intermediate_login_page.dart';
+import 'package:app_template_project/src/screens/no_internet_page.dart';
 import 'package:app_template_project/src/screens/splash_screen.dart';
 import 'package:app_template_project/src/screens/temp_page.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class App extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/TempPage': (BuildContext context) => TempPage(),
         '/HomePage': (BuildContext context) => HomePage(),
+        '/NoInternetPage': (BuildContext context) => NoInternetPage(),
         '/ErrorPage': (BuildContext context) => ErrorPage(),
         '/IntermediateLoginPage':(BuildContext context) => IntermediateLoginPage(),
         '/AddNewItemPage': (BuildContext context) => AddNewItemPage(),
