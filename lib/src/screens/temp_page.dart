@@ -1,6 +1,4 @@
-import 'package:app_template_project/src/screens/error_page.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class TempPage extends StatefulWidget {
   @override

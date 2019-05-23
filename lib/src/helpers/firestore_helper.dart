@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
-import 'package:rxdart/rxdart.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:location/location.dart';
 import 'package:flutter/services.dart';
@@ -34,8 +33,9 @@ abstract class BaseFirestoreHelper {
 class FirestoreHelper extends BaseFirestoreHelper {
   FirebaseUser firebaseUser;
   LocationData position;
-  StreamController<QuerySnapshot> itemsStream =
-      BehaviorSubject<QuerySnapshot>();
+//  StreamController<QuerySnapshot> itemsStream =
+//      BehaviorSubject<QuerySnapshot>();
+
 
   @override
   Future<void> updateNameOnFirestore(String name) async {

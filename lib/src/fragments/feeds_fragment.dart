@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:app_template_project/src/helpers/firestore_helper.dart';
 import 'package:app_template_project/src/models/item.dart';
-import 'package:app_template_project/src/screens/edit_item_page.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';

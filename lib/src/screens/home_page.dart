@@ -2,7 +2,6 @@ import 'package:app_template_project/src/fragments/feeds_fragment.dart';
 import 'package:app_template_project/src/fragments/maps_fragment.dart';
 import 'package:app_template_project/src/fragments/profile_fragment.dart';
 import 'package:app_template_project/src/screens/add_new_item_page.dart';
-import 'package:app_template_project/src/screens/edit_item_page.dart';
 import 'package:app_template_project/src/screens/user_uploads_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

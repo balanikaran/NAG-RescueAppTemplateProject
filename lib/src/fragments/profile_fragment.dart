@@ -28,8 +28,14 @@ class _ProfileFragmentState extends State<ProfileFragment> {
     super.dispose();
   }
 
-  void reBuildPage() {
-    setState(() {});
+  Future<Null> _refresh() {
+    return _fakeFutureForRefresh().then((onValue) {
+      setState(() {});
+    });
+  }
+
+  Future<Null> _fakeFutureForRefresh() {
+    return Future.delayed(Duration(seconds: 2), () {});
   }
 
   @override
@@ -98,9 +104,12 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                                     source: ImageSource.gallery,
                                     maxHeight: 512.0,
                                     maxWidth: 512.0)
-                                .then((image) {
+                                .then((image) async {
                               if (image != null) {
-                                _showUserImageUploadDialog(context, image);
+                                await _showUserImageUploadDialog(context, image)
+                                    .then((onValue) {
+                                  _refresh();
+                                });
                               }
                             });
                           },
@@ -171,9 +180,12 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                         flex: 1,
                         child: IconButton(
                           icon: Icon(Icons.edit),
-                          onPressed: () {
-                            _showNameEditDialog(
-                                context, textFieldNameController);
+                          onPressed: () async {
+                            await _showNameEditDialog(
+                                    context, textFieldNameController)
+                                .then((onValue) {
+                              _refresh();
+                            });
                           },
                         ),
                       ),
@@ -280,7 +292,8 @@ class _ProfileFragmentState extends State<ProfileFragment> {
                                 AsyncSnapshot<LocationData> snapshot) {
                               String name;
                               if (snapshot.hasData) {
-                                name = "[${snapshot.data.latitude} °N, ${snapshot.data.longitude} °E]";
+                                name =
+                                    "[${snapshot.data.latitude} °N, ${snapshot.data.longitude} °E]";
                               } else {
                                 name = "Your co-ordinates here...";
                               }
@@ -400,7 +413,7 @@ Future<bool> _showNameEditDialog(
       });
 }
 
-_showUserImageUploadDialog(BuildContext context, File image) {
+Future<bool> _showUserImageUploadDialog(BuildContext context, File image) {
   if (image != null) {
     FirebaseAuth.instance.currentUser().then((user) {
       final StorageReference reference = FirebaseStorage.instance
@@ -419,7 +432,7 @@ _showUserImageUploadDialog(BuildContext context, File image) {
     });
   }
 
-  showDialog(
+  return showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
@@ -437,7 +450,9 @@ _showUserImageUploadDialog(BuildContext context, File image) {
             ),
           ),
         );
-      });
+      }).then((onValue) {
+    return true;
+  });
 }
 
 Future<bool> _onBackPressed() {
