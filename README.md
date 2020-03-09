@@ -1,10 +1,10 @@
-# app_template_project
+# NAG - app_template_project
 
-A skeleton app for NAG.
+A skeleton app in flutter which creates a database in Firebase Firestore about the important items available nearby to users required in disasterous conditions.
+
+### Note - This App is a property of NAG International. I, Karan Balani, is the developer of this App. ^_^
 
 ## Getting Started
-
-This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
 
